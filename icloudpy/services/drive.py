@@ -205,6 +205,28 @@ class DriveService:
         )
         return request.json()
 
+    def move_items(self, node_id, etag, destination_id):
+        """Moves an iCloud Drive node"""
+        request = self.session.post(
+            self._service_root + "/moveItems",
+            params=self.params,
+            data=json.dumps(
+                {
+                    "destinationDrivewsId": destination_id,
+                    "items": [
+                        {
+                            "clientId": self.params["clientId"],
+                            "drivewsid": node_id,
+                            "etag": etag,
+                        }
+                    ],
+                }
+            ),
+        )
+        if not request.ok:
+            self.session.raise_error(request.status_code, request.reason)
+        return request.json()
+
     def move_items_to_trash(self, node_id, etag):
         """Moves an iCloud Drive node to the trash bin"""
         request = self.session.post(
@@ -335,6 +357,12 @@ class DriveNode:
         """Rename an iCloud Drive item."""
         return self.connection.rename_items(
             self.data["drivewsid"], self.data["etag"], name
+        )
+
+    def move(self, destination):
+        """Moves an iCloud Drive item."""
+        return self.connection.move_items(
+            self.data["drivewsid"], self.data["etag"], destination
         )
 
     def delete(self):
