@@ -287,15 +287,18 @@ class DriveNode:
 
     def get_children(self):
         """Gets the node children."""
-        if not self._children:
-            if "items" not in self.data:
-                self.data.update(self.connection.get_node_data(self.data["drivewsid"]))
-            if "items" not in self.data:
-                raise KeyError(f'No items in folder, status: {self.data["status"]}')
-            self._children = [
-                DriveNode(self.connection, item_data)
-                for item_data in self.data["items"]
-            ]
+
+        # reset children
+        self._children = None
+
+        if "items" not in self.data:
+            self.data.update(self.connection.get_node_data(self.data["drivewsid"]))
+        if "items" not in self.data:
+            raise KeyError(f'No items in folder, status: {self.data["status"]}')
+        self._children = [
+            DriveNode(self.connection, item_data)
+            for item_data in self.data["items"]
+        ]
         return self._children
 
     @property
