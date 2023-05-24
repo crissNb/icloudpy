@@ -288,11 +288,7 @@ class DriveNode:
     def get_children(self):
         """Gets the node children."""
 
-        # reset children
-        self._children = None
-
-        if "items" not in self.data:
-            self.data.update(self.connection.get_node_data(self.data["drivewsid"]))
+        self.data = self.connection.get_node_data(self.data["drivewsid"])
         if "items" not in self.data:
             raise KeyError(f'No items in folder, status: {self.data["status"]}')
         self._children = [
